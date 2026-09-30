@@ -1,0 +1,8 @@
+# downloaded by scripts/fetch-vendor.sh
+**/vendor/
+**/_fonts/
+# generated
+**/assets/audio/
+**/snapshots/
+*.mp4
+.DS_Store

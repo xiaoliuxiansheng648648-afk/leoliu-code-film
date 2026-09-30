@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1920, height=1080" />
+  <title>国庆回家路</title>
+  <script src="vendor/gsap.min.js"></script>
+  <script src="engine.js"></script>
+  <script src="scenes2d.js"></script>
+  <script type="importmap">{ "imports": { "three": "./vendor/three/three.module.js", "three/addons/": "./vendor/three/addons/" } }</script>
+  <style>
+    @font-face { font-family: "LeoSans"; src: url("_fonts/NotoSansSC-VF.ttf") format("truetype"); font-weight: 100 900; }
+    html, body { margin: 0; background: #000; }
+    #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: #000; font-family: "LeoSans", sans-serif; }
+    canvas { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+    .abs { position: absolute; }
+    .ttl { left: 0; width: 1920px; top: 150px; text-align: center; color: #fff8ec; font-weight: 800; font-size: 92px; letter-spacing: 12px; opacity: 0;
+      text-shadow: 0 0 28px rgba(20,12,24,.75), 0 6px 34px rgba(0,0,0,.6), 0 1px 3px rgba(0,0,0,.6); }
+    .ttl small { display: block; margin-top: 8px; font-size: 34px; font-weight: 500; letter-spacing: 12px; opacity: .9; }
+    #home { left: 0; width: 1920px; top: 330px; line-height: 1; text-align: center; color: #fff8ec; font-weight: 900; font-size: 250px; letter-spacing: 40px;
+      text-shadow: 0 10px 60px rgba(0,0,0,.55), 0 0 40px rgba(255,200,140,.35); }
+    .bub { opacity: 0; font-size: 46px; font-weight: 700; color: #1b1b1b; }
+    .bub .who { display: block; font-size: 30px; font-weight: 600; color: rgba(255,250,240,.92); margin: 0 0 12px 6px; text-shadow: 0 2px 10px rgba(0,0,0,.6); }
+    .bub .b { display: inline-block; padding: 16px 36px 20px; border-radius: 26px; background: #fbfaf7; box-shadow: 0 16px 40px rgba(0,0,0,.45); }
+    .bub.me { text-align: right; } .bub.me .b { background: #95ec69; }
+    .bub .fail { display: inline-block; width: 52px; height: 52px; line-height: 52px; margin-right: 16px; border-radius: 50%; background: #e04a3a; color: #fff; text-align: center; font-weight: 900; font-size: 36px; vertical-align: middle; }
+    #flash { left: 0; top: 0; width: 1920px; height: 1080px; opacity: 0; background: #ffe6bf; }
+    #by, #credit { bottom: 30px; color: rgba(240,230,214,.8); font-size: 26px; font-weight: 600; letter-spacing: 1px; text-shadow: 0 1px 6px rgba(0,0,0,.7); }
+    #by { left: 56px; } #credit { right: 56px; }
+    #endcard { left: 0; top: 0; width: 1920px; height: 1080px; opacity: 0; background: rgba(12,10,16,.84); display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff8ec; }
+    #endcard .q { font-size: 84px; font-weight: 900; letter-spacing: 4px; }
+    #endcard .a { margin-top: 28px; font-size: 60px; font-weight: 700; color: #f2c27b; letter-spacing: 3px; }
+    #endcard .by { position: absolute; bottom: 70px; font-size: 34px; font-weight: 600; opacity: .8; }
+  </style>
+</head>
+<body>
+<div id="root" data-composition-id="main" data-start="0" data-duration="61" data-width="1920" data-height="1080">
+  <canvas id="c3" width="1920" height="1080" data-layout-allow-overflow></canvas>
+  <canvas id="c2" width="1920" height="1080" data-layout-allow-overflow></canvas>
+  <div id="flash" class="abs"></div>
+
+  <div id="home" class="abs">回家</div>
+  <div id="sub0" class="abs" style="left:0;width:1920px;top:660px;text-align:center;color:#fff8ec;font-size:46px;font-weight:700;letter-spacing:3px;text-shadow:0 0 22px rgba(0,0,0,.8),0 2px 8px rgba(0,0,0,.7)">这趟回家的路，每一帧，都是 AI 写代码画出来的</div>
+  <div id="t-bj" class="abs ttl">北京西<small>清 晨</small></div>
+  <div id="t-sjz" class="abs ttl">石家庄</div>
+  <div id="t-hh" class="abs ttl">黄河<small>郑 州</small></div>
+  <div id="t-cj" class="abs ttl">长江<small>武 汉</small></div>
+  <div id="t-cs" class="abs ttl">长沙</div>
+  <div id="t-south" class="abs ttl">越往南，秋天越晚</div>
+  <div id="t-gz" class="abs ttl">广州南<small>黄 昏</small></div>
+
+  <div id="m1" class="abs bub" style="left:1150px;top:700px"><span class="who">妈妈</span><span class="b">几点的车？</span></div>
+  <div id="m2" class="abs bub me" style="right:260px;top:790px"><span class="b">出发了</span></div>
+  <div id="m3" class="abs bub" style="left:1150px;top:700px"><span class="who">妈妈</span><span class="b">过石家庄了没？</span></div>
+  <div id="m4" class="abs bub" style="left:110px;top:800px"><span class="who">妈妈</span><span class="b">给你炖了汤</span></div>
+  <div id="m5" class="abs bub" style="left:1150px;top:700px"><span class="who">妈妈</span><span class="b">路上吃点东西</span></div>
+  <div id="m6" class="abs bub me" style="right:260px;top:760px"><span class="fail">!</span><span class="b">快到了</span></div>
+  <div id="m7" class="abs bub" style="left:1150px;top:700px"><span class="who">妈妈</span><span class="b">到哪了？</span></div>
+  <div id="m8" class="abs bub me" style="right:260px;top:790px"><span class="b">到了</span></div>
+  <div id="m9" class="abs bub" style="left:1150px;top:700px"><span class="who">妈妈</span><span class="b">汤还热着</span></div>
+
+  <div id="by" class="abs">LeoLiu｜AI智能体落地</div>
+  <div id="credit" class="abs">画面与配乐：AI 写代码生成 · 配音：AI 合成</div>
+  <div id="endcard" class="abs"><div class="q">这条片，每一帧都是 AI 写代码画的</div><div class="a">你觉得哪一幕，最不像代码画的？</div><div class="n" style="margin-top:34px;font-size:40px;font-weight:600;opacity:.85;letter-spacing:2px">做法下期拆开讲</div><div class="by">LeoLiu｜AI智能体落地</div></div>
+
+  <audio id="music" src="assets/audio/music.wav" data-start="0" data-duration="61" data-track-index="11" data-volume="1"></audio>
+</div>
+
+<script>
+(function () {
+  const E = XE, S = XS2, W = 1920, H = 1080;
+  const c2 = document.getElementById('c2'), ctx = c2.getContext('2d');
+  const gc = E.canvas(), glow = gc.getContext('2d');
+  const c3 = document.getElementById('c3');
+
+  // shot table: [name, start, end, kind]
+  const SHOTS = [
+    ['station', 0, 9.0, '2d'], ['plain', 9.0, 17.0, '2d'], ['huanghe', 16.4, 25.0, '3d'], ['yangtze', 25.0, 34.6, '3d'],
+    ['hunan', 34.0, 40.0, '2d'], ['tunnel', 40.0, 43.0, '2d'], ['south', 43.0, 50.4, '2d'], ['city', 49.6, 54.9, '2d'], ['arrive', 54.3, 61, '2d'],
+  ];
+  const MSG = [[4.8, 8.6], [6.8, 8.6], [12.0, 16.0], [27.4, 33.6], [36.0, 39.6], [41.0, 42.9], [45.6, 49.8], [51.4, 54.2], [56.2, 59.0]]; // phone lights for these
+  const phoneLit = (t) => MSG.some(([a, b]) => t >= a - 0.2 && t <= b) ? 1 : 0;
+  const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
+
+  function shift(name, lt) {
+    switch (name) {
+      case 'station': return lt < 4.2 ? 0 : 90 * (lt - 4.2) * (lt - 4.2);
+      case 'plain': case 'hunan': return 900 * lt;
+      case 'tunnel': return 2600 * lt;
+      case 'south': return 700 * lt;
+      case 'city': return 320 * lt - 30 * lt * lt;
+      case 'arrive': return 220 * (1 - Math.pow(1 - clamp(lt / 3.2), 3));
+    }
+    return 0;
+  }
+  const GRADE = { station: { warm: '#ffb070', cool: '#28406a' }, plain: { warm: '#ffd8a0', cool: '#40587a', bloom: 0.28 }, hunan: { warm: '#ffc080', cool: '#34506a' }, tunnel: { warm: '#ffb060', cool: '#101020', vignette: 0.7 },
+    south: { warm: '#ff9a5a', cool: '#3a2450', vignette: 0.6 }, city: { warm: '#ff9a7a', cool: '#1a2050', vignette: 0.6 }, arrive: { warm: '#ffa080', cool: '#1c1c40', vignette: 0.6 } };
+
+  function draw2d(name, lt, t, frame) {
+    glow.clearRect(0, 0, W, H); ctx.clearRect(0, 0, W, H);
+    const o = { shift: shift(name, lt), phone: name === 'tunnel' ? 1 : phoneLit(t), stamp: name === 'arrive' ? clamp((t - 55.2) / 0.25) : 0, reflect: name === 'tunnel' || name === 'arrive' ? 0 : 0.04 };
+    S[name](ctx, glow, lt, o);
+    E.post(ctx, gc, frame, GRADE[name]);
+  }
+
+  function render(t) {
+    const frame = Math.round(t * 30);
+    const active = SHOTS.filter(([, a, b]) => t >= a && t < b);
+    const d2 = active.filter((s) => s[3] === '2d'), d3 = active.filter((s) => s[3] === '3d');
+    // 3D underneath
+    if (d3.length && window.__render3d) { const s = d3[d3.length - 1]; window.__render3d(s[0], t - s[1], s[2] - s[1]); c3.style.opacity = 1; } else c3.style.opacity = 0;
+    // 2D on top; during overlaps draw the later shot and fade by transition rules
+    if (d2.length) {
+      const s = d2[d2.length - 1]; let alpha = 1, scale = 1;
+      if (s[0] === 'plain' && t > 16.4) { const k = clamp((t - 16.4) / 0.6); alpha = 1 - k; scale = 1 + 0.35 * k * k; }      // push out of the window into 3D
+      if (s[0] === 'hunan' && t < 34.6) { const k = clamp((t - 34.0) / 0.6); alpha = k; scale = 1.25 - 0.25 * (1 - Math.pow(1 - k, 3)); } // pull back into the carriage
+      if (d2.length > 1) { // 2D→2D crossfade: draw earlier shot, then later with alpha
+        const [p] = d2; const k = clamp((t - s[1]) / (p[2] - s[1]));
+        draw2d(p[0], t - p[1], t, frame); const tmp = E.canvas(); tmp.getContext('2d').drawImage(c2, 0, 0);
+        draw2d(s[0], t - s[1], t, frame); const cur = E.canvas(); cur.getContext('2d').drawImage(c2, 0, 0);
+        ctx.clearRect(0, 0, W, H); ctx.drawImage(tmp, 0, 0); ctx.globalAlpha = k; ctx.drawImage(cur, 0, 0); ctx.globalAlpha = 1;
+      } else draw2d(s[0], t - s[1], t, frame);
+      c2.style.opacity = alpha; c2.style.transform = `scale(${scale})`; c2.style.transformOrigin = '960px 480px';
+    } else { c2.style.opacity = 0; }
+  }
+
+  const state = { t: 0 };
+  const tl = gsap.timeline({ paused: true, onUpdate: () => render(state.t) });
+  tl.to(state, { t: 61, duration: 61, ease: 'none' }, 0);
+
+  // opening word, readable at frame 0
+  tl.set('#home', { opacity: 1 }, 0).to('#home', { opacity: 0, y: -30, duration: 0.6, ease: 'power2.in' }, 3.7);
+  tl.set('#sub0', { opacity: 1 }, 0).to('#sub0', { opacity: 0, duration: 0.4 }, 3.7);
+  // place titles
+  [['#t-bj', 5.0, 8.4], ['#t-sjz', 9.8, 15.4], ['#t-hh', 18.0, 24.2], ['#t-cj', 26.0, 33.0], ['#t-cs', 34.9, 39.4], ['#t-south', 44.0, 49.2], ['#t-gz', 50.4, 54.0]].forEach(([sel, a, b]) => {
+    tl.set(sel, { opacity: 0, y: 24, scale: 1.08 }, 0);
+    tl.to(sel, { opacity: 1, y: 0, scale: 1, duration: 0.7, ease: 'power3.out' }, a).to(sel, { opacity: 0, y: -14, duration: 0.5, ease: 'power2.in' }, b - 0.5);
+  });
+  // messages
+  ['#m1', '#m2', '#m3', '#m4', '#m5', '#m6', '#m7', '#m8', '#m9'].forEach((sel, i) => {
+    const [a, b] = MSG[i]; tl.set(sel, { opacity: 0, y: 30, scale: 0.9 }, 0);
+    tl.to(sel, { opacity: 1, y: 0, scale: 1, duration: 0.35, ease: 'back.out(2)' }, a).to(sel, { opacity: 0, y: -10, duration: 0.3 }, b - 0.3);
+  });
+  // stack: the reply pushes the question up a little
+  tl.to('#m1', { y: -110, duration: 0.3, ease: 'power2.out' }, 6.8);
+  // flashes: Yellow River → Yangtze cut, tunnel exit
+  tl.set('#flash', { opacity: 0 }, 0);
+  tl.to('#flash', { opacity: 0.9, duration: 0.12 }, 24.88).to('#flash', { opacity: 0, duration: 0.4 }, 25.0);
+  tl.to('#flash', { opacity: 0.95, duration: 0.1 }, 42.95).to('#flash', { opacity: 0, duration: 0.5, ease: 'power2.out' }, 43.06);
+  // end card
+  tl.set('#endcard', { opacity: 0 }, 0).to('#endcard', { opacity: 1, duration: 0.5 }, 58.9);
+  tl.set('#by, #credit', { opacity: 1 }, 0).to('#by, #credit', { opacity: 0, duration: 0.3 }, 58.9);
+
+  window.__timelines = window.__timelines || {}; window.__timelines.main = tl;
+  window.__v6render = render;
+  document.fonts.load('800 92px LeoSans').then(() => render(state.t));
+})();
+</script>
+<script type="module">
+import { render3d } from './scene3d.js';
+window.__render3d = render3d;
+</script>
+</body>
+</html>
