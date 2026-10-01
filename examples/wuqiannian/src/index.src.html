@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1920, height=1080" />
+  <title>上下五千年</title>
+  <script src="vendor/gsap.min.js"></script>
+  <style>
+    @font-face { font-family: "Song"; src: url("_fonts/NotoSerifSC-VF.ttf") format("truetype"); font-weight: 200 900; }
+    @font-face { font-family: "Garamond"; src: url("_fonts/EBGaramond-VF.ttf") format("truetype"); font-weight: 400 800; }
+    @font-face { font-family: "Garamond"; src: url("_fonts/EBGaramond-Italic-VF.ttf") format("truetype"); font-weight: 400 800; font-style: italic; }
+    :root { --ink: #050506; --paper: #EDE6D8; --gold: #E9C98E; --cinnabar: #C8412F; --slate: #8FA3B8; --mute: #8C867B; }
+    html, body { margin: 0; background: var(--ink); }
+    #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: var(--ink); color: var(--paper); font-family: "Song", serif; }
+    .abs { position: absolute; }
+    #bg { left: 0; top: 0; width: 1920px; height: 1080px; background: radial-gradient(ellipse 70% 60% at 50% 48%, #08080a 0%, #040405 55%, #020202 100%); }
+    #grain { left: 0; top: 0; width: 1920px; height: 1080px; opacity: .03; mix-blend-mode: screen; }
+    #halo { left: 960px; top: 470px; width: 1100px; height: 1100px; margin: -550px 0 0 -550px; border-radius: 50%; opacity: .75;
+      background: radial-gradient(circle, rgba(233,201,142,.13) 0%, rgba(233,201,142,.035) 32%, rgba(233,201,142,0) 60%); }
+    #fx { left: 0; top: 0; width: 1920px; height: 1080px; }
+    svg#stage { left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+    svg text { font-family: "Garamond", "Song", serif; }
+    #q { left: 0; width: 1920px; top: 380px; text-align: center; transform-origin: 960px 90px; }
+    #q .l { font-size: 86px; font-weight: 500; letter-spacing: 10px; line-height: 1.32; text-shadow: 0 0 30px rgba(233,201,142,.18); }
+    #q .l em { font-style: normal; color: var(--gold); }
+    #q .en { margin-top: 26px; font-family: "Garamond"; font-style: italic; font-size: 28px; letter-spacing: 1px; color: #9A9486; }
+    .choice { top: 470px; width: 520px; text-align: center; font-family: "Garamond"; font-style: italic; font-size: 118px; font-weight: 500; color: var(--paper); opacity: 0; }
+    .choice small { display: block; font-family: "Song"; font-style: normal; font-size: 26px; letter-spacing: 6px; color: var(--slate); margin-top: 4px; }
+    #timer { left: 660px; top: 700px; width: 600px; height: 2px; background: rgba(143,163,184,.18); opacity: 0; }
+    #timer i { display: block; height: 2px; width: 100%; transform-origin: left center; transform: scaleX(0); background: linear-gradient(90deg, rgba(233,201,142,.2), var(--gold)); box-shadow: 0 0 12px rgba(233,201,142,.6); }
+    #guess { left: 0; width: 1920px; top: 318px; text-align: center; opacity: 0; font-family: "Garamond"; font-style: italic; font-size: 40px; color: #6F6A62; letter-spacing: 2px; }
+    #guess span { margin: 0 34px; position: relative; }
+    #guess span.hit { color: var(--gold); }
+    #guess svg { position: absolute; left: -26px; top: -14px; overflow: visible; }
+    #counter { left: 0; width: 1920px; top: 140px; text-align: center; opacity: 0; }
+    #counter b { font-family: "Garamond"; font-weight: 500; font-size: 132px; color: var(--paper); font-variant-numeric: tabular-nums; letter-spacing: 2px; text-shadow: 0 0 40px rgba(233,201,142,.25); }
+    #counter span { font-size: 40px; letter-spacing: 8px; color: var(--slate); margin-left: 16px; }
+    #anc { left: 110px; top: 70px; opacity: 0; }
+    #anc .gen { font-size: 30px; letter-spacing: 4px; color: var(--slate); }
+    #anc .num { margin-top: 18px; font-family: "Garamond"; font-size: 108px; font-weight: 500; color: var(--paper); font-variant-numeric: tabular-nums; line-height: 1; text-shadow: 0 0 40px rgba(233,201,142,.3); }
+    #anc .num small { font-family: "Song"; font-size: 30px; letter-spacing: 4px; color: var(--gold); margin-left: 14px; }
+    #bars { left: 460px; top: 300px; width: 1000px; opacity: 0; }
+    #bars .row { margin-bottom: 46px; }
+    #bars .lab { font-size: 32px; letter-spacing: 3px; margin-bottom: 14px; }
+    #bars .lab b { font-family: "Garamond"; font-weight: 500; font-size: 46px; margin-left: 14px; }
+    #bars .bar { height: 14px; border-radius: 7px; transform-origin: left center; }
+    #bars .a .lab { color: var(--gold); } #bars .a .bar { background: linear-gradient(90deg, rgba(233,201,142,.25), #E9C98E); box-shadow: 0 0 24px rgba(233,201,142,.55); width: 1000px; }
+    #bars .b .lab { color: var(--slate); } #bars .b .bar { background: linear-gradient(90deg, rgba(143,163,184,.2), #8FA3B8); width: 966px; }
+    .sub { left: 0; width: 1920px; top: 876px; text-align: center; opacity: 0; }
+    .sub .zh { font-size: 42px; font-weight: 400; letter-spacing: 3px; color: var(--paper); text-shadow: 0 2px 18px rgba(0,0,0,.9); }
+    .sub .zh em { font-style: normal; color: var(--gold); }
+    .sub .en { margin-top: 12px; font-family: "Garamond"; font-style: italic; font-size: 25px; color: #938D80; letter-spacing: .5px; }
+    .src { right: 56px; bottom: 34px; font-size: 17px; color: var(--mute); letter-spacing: 1px; opacity: 0; font-family: "Garamond", "Song"; }
+    #final { left: 0; width: 1920px; top: 168px; text-align: center; opacity: 0; }
+    #final .t1 { font-size: 132px; font-weight: 500; letter-spacing: 30px; text-shadow: 0 0 60px rgba(233,201,142,.25); }
+    #final .t2 { margin-top: 30px; font-size: 64px; letter-spacing: 12px; color: var(--gold); text-shadow: 0 0 36px rgba(233,201,142,.35); }
+    #final .t3 { margin-top: 22px; font-family: "Garamond"; font-style: italic; font-size: 30px; color: #9A9486; }
+    #ask { left: 0; width: 1920px; top: 420px; text-align: center; opacity: 0; }
+    #ask .t1 { font-size: 76px; font-weight: 500; letter-spacing: 8px; }
+    #ask .t1 em { font-style: normal; color: var(--gold); }
+    #ask .t2 { margin-top: 24px; font-family: "Garamond"; font-style: italic; font-size: 30px; color: #9A9486; }
+    #by { left: 56px; bottom: 34px; font-size: 18px; color: var(--mute); letter-spacing: 1px; }
+    #credit { right: 56px; bottom: 34px; font-size: 17px; color: var(--mute); letter-spacing: 1px; opacity: 0; }
+  </style>
+</head>
+<body>
+<div id="root" data-composition-id="main" data-start="0" data-duration="108" data-width="1920" data-height="1080">
+  <div id="bg" class="abs"></div>
+  <canvas id="grain" class="abs" width="1920" height="1080" data-layout-allow-overflow></canvas>
+  <div id="halo" class="abs"></div>
+  <canvas id="fx" class="abs" width="1920" height="1080" data-layout-allow-overflow></canvas>
+  <svg id="stage" class="abs" viewBox="0 0 1920 1080" data-layout-allow-overflow>
+    <defs>
+      <radialGradient id="dg"><stop offset="0" stop-color="#E9C98E" stop-opacity=".9"/><stop offset=".35" stop-color="#E9C98E" stop-opacity=".25"/><stop offset="1" stop-color="#E9C98E" stop-opacity="0"/></radialGradient>
+      <linearGradient id="axisg" x1="0" x2="1"><stop offset="0" stop-color="#8FA3B8" stop-opacity="0"/><stop offset=".08" stop-color="#8FA3B8" stop-opacity=".55"/><stop offset="1" stop-color="#8FA3B8" stop-opacity=".7"/></linearGradient>
+    </defs>
+    <g id="axis" opacity="0"><line id="axisLine" x1="200" y1="560" x2="1720" y2="560" stroke="url(#axisg)" stroke-width="1.6"/></g>
+    <g id="ticksFine"></g><g id="ticksCoarse"></g>
+    <g id="train" opacity="0"></g>
+    <g id="dots"></g>
+    <g id="marks"></g>
+  </svg>
+
+  <div id="q" class="abs"><div class="l">从五千年前，到你</div><div class="l">中间隔着<em>多少代人</em>？</div><div class="en">From five thousand years ago to you — how many generations lie in between?</div></div>
+  <div id="c1" class="abs choice" style="left:180px">2000<small>代</small></div>
+  <div id="c2" class="abs choice" style="left:700px">200<small>代</small></div>
+  <div id="c3" class="abs choice" style="left:1220px">20000<small>代</small></div>
+  <div id="timer" class="abs"><i></i></div>
+  <div id="guess" class="abs"><span>2000</span><span class="hit">200<svg width="120" height="76"><ellipse id="ring" cx="60" cy="36" rx="58" ry="30" fill="none" stroke="#C8412F" stroke-width="2.2" stroke-dasharray="300" stroke-dashoffset="300" transform="rotate(-6 60 36)"/></svg></span><span>20000</span></div>
+  <div id="counter" class="abs"><b id="cnum">0</b><span>代</span></div>
+  <div id="anc" class="abs"><div class="gen" id="ancGen">第 1 代</div><div class="num"><span id="ancNum">2</span><small>个祖先座位</small></div></div>
+  <div id="bars" class="abs">
+    <div class="row a"><div class="lab">你往上 33 代的祖先座位<b>85.9 亿</b></div><div class="bar" id="barA"></div></div>
+    <div class="row b"><div class="lab">今天全世界的人<b>约 83 亿</b></div><div class="bar" id="barB"></div></div>
+  </div>
+  <div id="subs"></div>
+  <div id="srcs"></div>
+  <div id="final" class="abs"><div class="t1">上下五千年</div><div class="t2">往上数，我们是一家人</div><div class="t3">Five thousand years up the family tree — we are one family.</div></div>
+  <div id="ask" class="abs"><div class="t1">你家的家谱，能往上数<em>几代</em>？</div><div class="t2">How far back can your family tree go?</div></div>
+  <div id="by" class="abs">LeoLiu｜AI智能体落地</div>
+  <div id="credit" class="abs">画面与配乐：AI 写代码生成</div>
+
+  <audio id="music" src="assets/audio/music.wav" data-start="0" data-duration="108" data-track-index="11" data-volume="1"></audio>
+</div>
+<script src="film.js"></script>
+</body>
+</html>

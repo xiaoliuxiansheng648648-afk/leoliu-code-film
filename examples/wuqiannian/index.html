@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1920, height=1080" />
+  <title>上下五千年</title>
+  <script src="vendor/gsap.min.js"></script>
+  <style>
+    @font-face { font-family: "Song"; src: url("_fonts/NotoSerifSC-VF.ttf") format("truetype"); font-weight: 200 900; }
+    @font-face { font-family: "Garamond"; src: url("_fonts/EBGaramond-VF.ttf") format("truetype"); font-weight: 400 800; }
+    @font-face { font-family: "Garamond"; src: url("_fonts/EBGaramond-Italic-VF.ttf") format("truetype"); font-weight: 400 800; font-style: italic; }
+    :root { --ink: #050506; --paper: #EDE6D8; --gold: #E9C98E; --cinnabar: #C8412F; --slate: #8FA3B8; --mute: #8C867B; }
+    html, body { margin: 0; background: var(--ink); }
+    #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: var(--ink); color: var(--paper); font-family: "Song", serif; }
+    .abs { position: absolute; }
+    #bg { left: 0; top: 0; width: 1920px; height: 1080px; background: radial-gradient(ellipse 70% 60% at 50% 48%, #08080a 0%, #040405 55%, #020202 100%); }
+    #grain { left: 0; top: 0; width: 1920px; height: 1080px; opacity: .03; mix-blend-mode: screen; }
+    #halo { left: 960px; top: 470px; width: 1100px; height: 1100px; margin: -550px 0 0 -550px; border-radius: 50%; opacity: .75;
+      background: radial-gradient(circle, rgba(233,201,142,.13) 0%, rgba(233,201,142,.035) 32%, rgba(233,201,142,0) 60%); }
+    #fx { left: 0; top: 0; width: 1920px; height: 1080px; }
+    svg#stage { left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+    svg text { font-family: "Garamond", "Song", serif; }
+    #q { left: 0; width: 1920px; top: 380px; text-align: center; transform-origin: 960px 90px; }
+    #q .l { font-size: 86px; font-weight: 500; letter-spacing: 10px; line-height: 1.32; text-shadow: 0 0 30px rgba(233,201,142,.18); }
+    #q .l em { font-style: normal; color: var(--gold); }
+    #q .en { margin-top: 26px; font-family: "Garamond"; font-style: italic; font-size: 28px; letter-spacing: 1px; color: #9A9486; }
+    .choice { top: 470px; width: 520px; text-align: center; font-family: "Garamond"; font-style: italic; font-size: 118px; font-weight: 500; color: var(--paper); opacity: 0; }
+    .choice small { display: block; font-family: "Song"; font-style: normal; font-size: 26px; letter-spacing: 6px; color: var(--slate); margin-top: 4px; }
+    #timer { left: 660px; top: 700px; width: 600px; height: 2px; background: rgba(143,163,184,.18); opacity: 0; }
+    #timer i { display: block; height: 2px; width: 100%; transform-origin: left center; transform: scaleX(0); background: linear-gradient(90deg, rgba(233,201,142,.2), var(--gold)); box-shadow: 0 0 12px rgba(233,201,142,.6); }
+    #guess { left: 0; width: 1920px; top: 318px; text-align: center; opacity: 0; font-family: "Garamond"; font-style: italic; font-size: 40px; color: #6F6A62; letter-spacing: 2px; }
+    #guess span { margin: 0 34px; position: relative; }
+    #guess span.hit { color: var(--gold); }
+    #guess svg { position: absolute; left: -26px; top: -14px; overflow: visible; }
+    #counter { left: 0; width: 1920px; top: 140px; text-align: center; opacity: 0; }
+    #counter b { font-family: "Garamond"; font-weight: 500; font-size: 132px; color: var(--paper); font-variant-numeric: tabular-nums; letter-spacing: 2px; text-shadow: 0 0 40px rgba(233,201,142,.25); }
+    #counter span { font-size: 40px; letter-spacing: 8px; color: var(--slate); margin-left: 16px; }
+    #anc { left: 110px; top: 70px; opacity: 0; }
+    #anc .gen { font-size: 30px; letter-spacing: 4px; color: var(--slate); }
+    #anc .num { margin-top: 18px; font-family: "Garamond"; font-size: 108px; font-weight: 500; color: var(--paper); font-variant-numeric: tabular-nums; line-height: 1; text-shadow: 0 0 40px rgba(233,201,142,.3); }
+    #anc .num small { font-family: "Song"; font-size: 30px; letter-spacing: 4px; color: var(--gold); margin-left: 14px; }
+    #bars { left: 460px; top: 300px; width: 1000px; opacity: 0; }
+    #bars .row { margin-bottom: 46px; }
+    #bars .lab { font-size: 32px; letter-spacing: 3px; margin-bottom: 14px; }
+    #bars .lab b { font-family: "Garamond"; font-weight: 500; font-size: 46px; margin-left: 14px; }
+    #bars .bar { height: 14px; border-radius: 7px; transform-origin: left center; }
+    #bars .a .lab { color: var(--gold); } #bars .a .bar { background: linear-gradient(90deg, rgba(233,201,142,.25), #E9C98E); box-shadow: 0 0 24px rgba(233,201,142,.55); width: 1000px; }
+    #bars .b .lab { color: var(--slate); } #bars .b .bar { background: linear-gradient(90deg, rgba(143,163,184,.2), #8FA3B8); width: 966px; }
+    .sub { left: 0; width: 1920px; top: 876px; text-align: center; opacity: 0; }
+    .sub .zh { font-size: 42px; font-weight: 400; letter-spacing: 3px; color: var(--paper); text-shadow: 0 2px 18px rgba(0,0,0,.9); }
+    .sub .zh em { font-style: normal; color: var(--gold); }
+    .sub .en { margin-top: 12px; font-family: "Garamond"; font-style: italic; font-size: 25px; color: #938D80; letter-spacing: .5px; }
+    .src { right: 56px; bottom: 34px; font-size: 17px; color: var(--mute); letter-spacing: 1px; opacity: 0; font-family: "Garamond", "Song"; }
+    #final { left: 0; width: 1920px; top: 168px; text-align: center; opacity: 0; }
+    #final .t1 { font-size: 132px; font-weight: 500; letter-spacing: 30px; text-shadow: 0 0 60px rgba(233,201,142,.25); }
+    #final .t2 { margin-top: 30px; font-size: 64px; letter-spacing: 12px; color: var(--gold); text-shadow: 0 0 36px rgba(233,201,142,.35); }
+    #final .t3 { margin-top: 22px; font-family: "Garamond"; font-style: italic; font-size: 30px; color: #9A9486; }
+    #ask { left: 0; width: 1920px; top: 420px; text-align: center; opacity: 0; }
+    #ask .t1 { font-size: 76px; font-weight: 500; letter-spacing: 8px; }
+    #ask .t1 em { font-style: normal; color: var(--gold); }
+    #ask .t2 { margin-top: 24px; font-family: "Garamond"; font-style: italic; font-size: 30px; color: #9A9486; }
+    #by { left: 56px; bottom: 34px; font-size: 18px; color: var(--mute); letter-spacing: 1px; }
+    #credit { right: 56px; bottom: 34px; font-size: 17px; color: var(--mute); letter-spacing: 1px; opacity: 0; }
+  </style>
+</head>
+<body>
+<div id="root" data-composition-id="main" data-start="0" data-duration="108" data-width="1920" data-height="1080">
+  <div id="bg" class="abs"></div>
+  <canvas id="grain" class="abs" width="1920" height="1080" data-layout-allow-overflow></canvas>
+  <div id="halo" class="abs"></div>
+  <canvas id="fx" class="abs" width="1920" height="1080" data-layout-allow-overflow></canvas>
+  <svg id="stage" class="abs" viewBox="0 0 1920 1080" data-layout-allow-overflow>
+    <defs>
+      <radialGradient id="dg"><stop offset="0" stop-color="#E9C98E" stop-opacity=".9"/><stop offset=".35" stop-color="#E9C98E" stop-opacity=".25"/><stop offset="1" stop-color="#E9C98E" stop-opacity="0"/></radialGradient>
+      <linearGradient id="axisg" x1="0" x2="1"><stop offset="0" stop-color="#8FA3B8" stop-opacity="0"/><stop offset=".08" stop-color="#8FA3B8" stop-opacity=".55"/><stop offset="1" stop-color="#8FA3B8" stop-opacity=".7"/></linearGradient>
+    </defs>
+    <g id="axis" opacity="0"><line id="axisLine" x1="200" y1="560" x2="1720" y2="560" stroke="url(#axisg)" stroke-width="1.6"/></g>
+    <g id="ticksFine"></g><g id="ticksCoarse"></g>
+    <g id="train" opacity="0"></g>
+    <g id="dots"></g>
+    <g id="marks"></g>
+  </svg>
+
+  <div id="q" class="abs"><div class="l">从五千年前，到你</div><div class="l">中间隔着<em>多少代人</em>？</div><div class="en">From five thousand years ago to you — how many generations lie in between?</div></div>
+  <div id="c1" class="abs choice" style="left:180px">2000<small>代</small></div>
+  <div id="c2" class="abs choice" style="left:700px">200<small>代</small></div>
+  <div id="c3" class="abs choice" style="left:1220px">20000<small>代</small></div>
+  <div id="timer" class="abs"><i></i></div>
+  <div id="guess" class="abs"><span>2000</span><span class="hit">200<svg width="120" height="76"><ellipse id="ring" cx="60" cy="36" rx="58" ry="30" fill="none" stroke="#C8412F" stroke-width="2.2" stroke-dasharray="300" stroke-dashoffset="300" transform="rotate(-6 60 36)"/></svg></span><span>20000</span></div>
+  <div id="counter" class="abs"><b id="cnum">0</b><span>代</span></div>
+  <div id="anc" class="abs"><div class="gen" id="ancGen">第 1 代</div><div class="num"><span id="ancNum">2</span><small>个祖先座位</small></div></div>
+  <div id="bars" class="abs">
+    <div class="row a"><div class="lab">你往上 33 代的祖先座位<b>85.9 亿</b></div><div class="bar" id="barA"></div></div>
+    <div class="row b"><div class="lab">今天全世界的人<b>约 83 亿</b></div><div class="bar" id="barB"></div></div>
+  </div>
+  <div id="subs"></div>
+  <div id="srcs"></div>
+  <div id="final" class="abs"><div class="t1">上下五千年</div><div class="t2">往上数，我们是一家人</div><div class="t3">Five thousand years up the family tree — we are one family.</div></div>
+  <div id="ask" class="abs"><div class="t1">你家的家谱，能往上数<em>几代</em>？</div><div class="t2">How far back can your family tree go?</div></div>
+  <div id="by" class="abs">LeoLiu｜AI智能体落地</div>
+  <div id="credit" class="abs">画面与配乐：AI 写代码生成</div>
+
+  <audio id="music" src="assets/audio/music.wav" data-start="0" data-duration="108" data-track-index="11" data-volume="1"></audio>
+</div>
+<script>
+// XHS-064 上下五千年 — full film. Every frame is a pure function of t (seconds).
+// SVG/DOM for type and the timeline (sharp at 4K), a DPR-aware canvas for the particle scenes.
+(function () {
+  const NS = 'http://www.w3.org/2000/svg';
+  const el = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
+  const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
+  const easeOut = (x) => 1 - Math.pow(1 - clamp(x), 3);
+  const easeIn = (x) => Math.pow(clamp(x), 3);
+  const easeInOut = (x) => { x = clamp(x); return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
+  const lerp = (a, b, u) => a + (b - a) * u;
+  const rng = (s) => () => { s |= 0; s = s + 0x6D2B79F5 | 0; let t = Math.imul(s ^ s >>> 15, 1 | s); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  const $ = (s) => document.querySelector(s);
+  const W = 1920, H = 1080;
+
+  /* ================= facts ================= */
+  const NOW = 2026, GEN = 26.9, N = 185;                 // g = 0 (you) … 185 (≈ 4976 years ago)
+  const X0 = 200, X1 = 1720, Y = 560;
+  const LIBAI = 701, LIBAI_G = (NOW - LIBAI) / GEN;      // 49.3
+  const KONG = -550, KONG_G = (NOW - KONG) / GEN;        // 551 BCE (astronomical −550) → 95.8
+
+  /* ================= grain ================= */
+  const gcv = $('#grain'), gx = gcv.getContext('2d');
+  const tile = document.createElement('canvas'); tile.width = tile.height = 256;
+  { const t = tile.getContext('2d'), im = t.createImageData(256, 256), r = rng(7); for (let i = 0; i < im.data.length; i += 4) { const v = r() * 255; im.data[i] = v * .9; im.data[i + 1] = v * .95; im.data[i + 2] = v; im.data[i + 3] = 255; } t.putImageData(im, 0, 0); }
+  function grain(frame) { gx.clearRect(0, 0, W, H); const ox = (frame * 97) % 256, oy = (frame * 57) % 256; for (let x = -ox; x < W; x += 256) for (let y = -oy; y < H; y += 256) gx.drawImage(tile, x, y); }
+
+  /* ================= SVG timeline ================= */
+  const fine = $('#ticksFine'), coarse = $('#ticksCoarse');
+  const FINE = []; for (let y = 1930; y <= 2020; y += 10) { const g = el('g', {}, fine); el('line', { x1: 0, y1: Y - 6, x2: 0, y2: Y + 6, stroke: '#8FA3B8', 'stroke-opacity': y % 20 === 0 ? .7 : .35, 'stroke-width': 1.2 }, g); if (y % 20 === 0) el('text', { x: 0, y: Y + 40, 'text-anchor': 'middle', 'font-size': 22, fill: '#8FA3B8', 'fill-opacity': .85 }, g).textContent = y; FINE.push([y, g]); }
+  const COARSE = [[-1999, '公元前 2000'], [-999, '公元前 1000'], [1, '公元元年'], [1000, '公元 1000'], [2000, '公元 2000']].map(([y, label]) => { const g = el('g', {}, coarse); el('line', { x1: 0, y1: Y - 8, x2: 0, y2: Y + 8, stroke: '#8FA3B8', 'stroke-opacity': .7, 'stroke-width': 1.2 }, g); const tx = el('text', { x: 0, y: Y + 42, 'text-anchor': 'middle', 'font-size': 21, fill: '#8FA3B8', 'fill-opacity': .85 }, g); tx.textContent = label; tx.style.fontFamily = 'Song'; return [y, g]; });
+  const ends = el('g', { opacity: 0 }, coarse);
+  [[X0, '五千年前'], [X1, '今天']].forEach(([x, s]) => { const t = el('text', { x, y: Y - 34, 'text-anchor': 'middle', 'font-size': 24, fill: '#E9C98E' }, ends); t.textContent = s; t.style.fontFamily = 'Song'; });
+
+  const dotsG = $('#dots');
+  const D = []; for (let g = 0; g <= N; g++) { const grp = el('g', { opacity: 0 }, dotsG); const halo = el('circle', { r: 11, fill: 'url(#dg)' }, grp); const core = el('circle', { r: g === 0 ? 4.2 : 3, fill: '#F3DDB0' }, grp); D.push({ g, year: NOW - g * GEN, grp, halo, core }); }
+  const marks = $('#marks');
+  const FAM = ['你', '父母', '祖父母', '曾祖父母'].map((name, g) => { const t = el('text', { 'text-anchor': 'middle', 'font-size': g ? 26 : 30, fill: g ? '#EDE6D8' : '#E9C98E', opacity: 0 }, marks); t.textContent = name; t.style.fontFamily = 'Song'; return t; });
+  const gap = el('g', { opacity: 0 }, marks); const gapPath = el('path', { fill: 'none', stroke: '#E9C98E', 'stroke-opacity': .6, 'stroke-width': 1.2 }, gap); const gapTxt = el('text', { 'text-anchor': 'middle', 'font-size': 22, fill: '#E9C98E', 'font-style': 'italic' }, gap); gapTxt.textContent = '≈ 27 年';
+  function marker(zh, en) { const g = el('g', { opacity: 0 }, marks); const line = el('line', { y1: Y - 120, y2: Y - 10, stroke: '#C8412F', 'stroke-opacity': .8, 'stroke-width': 1.3 }, g); const t1 = el('text', { y: Y - 176, 'text-anchor': 'middle', 'font-size': 34, fill: '#EDE6D8' }, g); t1.textContent = zh; t1.style.fontFamily = 'Song'; const t2 = el('text', { y: Y - 138, 'text-anchor': 'middle', 'font-size': 22, fill: '#938D80', 'font-style': 'italic' }, g); t2.textContent = en; return { g, set(x) { line.setAttribute('x1', x); line.setAttribute('x2', x); t1.setAttribute('x', x); t2.setAttribute('x', x); } }; }
+  const mLibai = marker('李白 · 701', 'Li Bai'), mKong = marker('孔子 · 前551', 'Confucius');
+
+  /* train: 8 cars × 72 seats = 576 */
+  const train = $('#train'); const SEATS = []; let trainLab;
+  { const cars = 8, left = 230, width = 1480, gapW = 6, cw = (width - 7 * gapW) / cars, top = 486, h = 150, bodyEnd = left + width;
+    el('path', { d: `M${left + 30} ${top} L${bodyEnd - 150} ${top} C${bodyEnd - 60} ${top} ${bodyEnd + 8} ${top + 60} ${bodyEnd + 26} ${top + h - 18} Q${bodyEnd + 30} ${top + h} ${bodyEnd} ${top + h} L${left + 18} ${top + h} Q${left} ${top + h} ${left} ${top + h - 18} L${left} ${top + 30} Q${left} ${top} ${left + 30} ${top} Z`, fill: 'rgba(143,163,184,.03)', stroke: '#8FA3B8', 'stroke-opacity': .55, 'stroke-width': 1.1 }, train);
+    el('path', { d: `M${bodyEnd - 128} ${top + 22} C${bodyEnd - 70} ${top + 22} ${bodyEnd - 30} ${top + 44} ${bodyEnd - 10} ${top + 74}`, fill: 'none', stroke: '#8FA3B8', 'stroke-opacity': .35, 'stroke-width': 1 }, train);
+    for (let c = 1; c < cars; c++) { const x = left + c * (cw + gapW) - gapW / 2; el('line', { x1: x, y1: top + 6, x2: x, y2: top + h - 6, stroke: '#8FA3B8', 'stroke-opacity': .22, 'stroke-width': 1 }, train); }
+    el('line', { x1: left + 12, y1: top + h + 16, x2: bodyEnd - 10, y2: top + h + 16, stroke: '#8FA3B8', 'stroke-opacity': .25, 'stroke-width': 1 }, train);
+    for (let c = 0; c < cars; c++) { const x = left + c * (cw + gapW); [x + 26, x + cw - 26].forEach((bx) => el('circle', { cx: bx, cy: top + h + 7, r: 5, fill: 'none', stroke: '#8FA3B8', 'stroke-opacity': .35, 'stroke-width': 1 }, train)); }
+    for (let c = 0; c < cars; c++) { const x = left + c * (cw + gapW); for (let row = 0; row < 4; row++) for (let col = 0; col < 18; col++) { const sx = x + 16 + col * ((cw - 32) / 17), sy = top + 34 + row * 27 + (row > 1 ? 12 : 0); SEATS.push({ car: c, x: sx, y: sy, el: el('circle', { cx: sx, cy: sy, r: 2.4, fill: '#8FA3B8', 'fill-opacity': .24 }, train) }); } }
+    trainLab = el('text', { x: left + width / 2, y: top + h + 62, 'text-anchor': 'middle', 'font-size': 24, fill: '#8FA3B8' }, train); trainLab.style.fontFamily = 'Song';
+  }
+  const ORDER = SEATS.map((s, i) => i).sort((a, b) => (SEATS[b].car - SEATS[a].car) || (SEATS[b].x - SEATS[a].x) || (SEATS[a].y - SEATS[b].y));
+
+  /* ================= subtitles and sources ================= */
+  const SUBS = [
+    ['先猜一个。', 'Take a guess.', 3.7, 7.7],
+    ['一代人，平均大约 <em>27</em> 年。', 'A generation lasts about twenty-seven years on average.', 9.9, 13.5],
+    ['一代一代，往回数……', 'Count back, one generation at a time…', 14.0, 19.3],
+    ['五千年，其实不到 <em>200</em> 代人。', 'Five thousand years is fewer than two hundred generations.', 20.1, 22.6],
+    ['一列复兴号，能坐 <em>576</em> 人。', 'One Fuxing high-speed train seats 576.', 23.2, 25.6],
+    ['五千年里的每一代，坐不满它的<em>三分之一</em>。', 'Every generation of five thousand years would not fill a third of it.', 26.25, 29.6],
+    ['你和李白之间，不到 <em>50</em> 个人。', 'Between you and Li Bai: fewer than fifty people.', 32.2, 35.3],
+    ['和孔子之间，也不到 <em>100</em> 个人。', 'And Confucius? Fewer than a hundred.', 36.4, 40.3],
+    ['可如果，把每一位祖先都算上……', 'But what if you counted every single ancestor…', 41.0, 44.4],
+    ['每往上一代，祖先的“座位”就翻一倍。', 'Every generation back, the ancestor seats double.', 45.05, 48.6],
+    ['往上 33 代，你的祖先“座位”有 <em>86 亿</em>个，比今天全世界的人还多。', 'Thirty-three generations back: 8.6 billion ancestor seats — more than everyone alive today.', 53.6, 57.2],
+    ['可那时候，全世界才几亿人。', 'Yet back then, the whole world held only a few hundred million people.', 57.85, 60.6],
+    ['座位比人多，只有一个办法：同一个人，坐进了很多个座位。', 'More seats than people means one thing: the same person fills many seats.', 61.25, 65.2],
+    ['往上数得越远，你的祖先和我的祖先，就越是同一批人。', 'The further back you count, the more your ancestors and mine are the same people.', 65.85, 71.2],
+    ['一项发表在《自然》的研究，用数学模型推算：', 'A study in Nature worked it out with mathematical models:', 72.4, 75.4],
+    ['今天所有人最近的共同祖先，可能就生活在<em>几千年前</em>。', 'The most recent common ancestor of everyone alive today may have lived just a few thousand years ago.', 75.95, 79.4],
+    ['再往前几千年，那时的每一个人，要么是今天<em>所有人</em>的祖先，要么没有留下后代。', 'A few thousand years before that, everyone alive was an ancestor of all of us — or of none.', 79.95, 86.2],
+    ['五千年，不到 <em>200</em> 代人。', 'Five thousand years: fewer than two hundred generations.', 88.6, 91.6],
+    ['往上数，越数越是<em>一家人</em>。', 'Count back far enough, and we become one family.', 92.25, 96.2],
+  ];
+  SUBS.forEach(([zh, en], i) => { const d = document.createElement('div'); d.className = 'abs sub'; d.id = 'sub' + i; d.innerHTML = `<div class="zh">${zh}</div><div class="en">${en}</div>`; $('#subs').appendChild(d); });
+  const SRCS = [
+    ['代际间隔 26.9 年 · Wang et al., Science Advances, 2023', 10.2, 21.6],
+    ['复兴号 CR400AF 8 辆编组定员 576 人 · Engineering, 2020', 23.4, 29.6],
+    ['李白 701–762 · 孔子生于前 551 年（《史记·孔子世家》）', 31.0, 40.3],
+    ['“祖先座位”按每人 2 位父母计为 2ⁿ · 年份按每代 26.9 年推算', 44.8, 53.3],
+    ['全球人口约 83 亿 · 联合国《世界人口展望 2024》', 53.5, 57.2],
+    ['Rohde, Olson & Chang, Nature 431 (2004) · 数学模型推算，并非族谱记录', 72.4, 86.2],
+  ];
+  SRCS.forEach(([s], i) => { const d = document.createElement('div'); d.className = 'abs src'; d.id = 'src' + i; d.textContent = s; $('#srcs').appendChild(d); });
+
+  /* ================= canvas fx ================= */
+  const fx = $('#fx'); const dpr = window.devicePixelRatio || 1; fx.width = W * dpr; fx.height = H * dpr; const c = fx.getContext('2d');
+  function sprite(r, g, b) { const s = document.createElement('canvas'); s.width = s.height = 64; const x = s.getContext('2d'); const gr = x.createRadialGradient(32, 32, 0, 32, 32, 32); gr.addColorStop(0, `rgba(${r},${g},${b},1)`); gr.addColorStop(.18, `rgba(${r},${g},${b},.55)`); gr.addColorStop(.5, `rgba(${r},${g},${b},.12)`); gr.addColorStop(1, `rgba(${r},${g},${b},0)`); x.fillStyle = gr; x.fillRect(0, 0, 64, 64); return s; }
+  const SG = sprite(233, 201, 142), SW = sprite(255, 244, 222), SS = sprite(143, 163, 184), SR = sprite(200, 65, 47);
+  const glow = (spr, x, y, size, a) => { if (a <= .004) return; c.globalAlpha = Math.min(1, a); c.drawImage(spr, x - size / 2, y - size / 2, size, size); };
+  const dot = (x, y, r, col, a) => { if (a <= .004) return; c.globalAlpha = Math.min(1, a); c.fillStyle = col; c.fillRect(x - r, y - r, r * 2, r * 2); };
+
+  /* ---- E: the doubling fan ---- */
+  const CX = 960, CY = 800; const R = (l) => 50 + l * 60;
+  const kC = (t) => t < 46.8 ? clamp((t - 41.3) / .55, 0, 10) : 10 + 23 * easeIn((t - 46.8) / 6.4);
+  const camS = (k) => Math.min(1, R(10) / R(Math.max(10, k)));
+  const LV = []; for (let l = 1; l <= 10; l++) { const n = 2 ** l; LV[l] = []; for (let i = 0; i < n; i++) LV[l].push(Math.PI + (i + .5) / n * Math.PI); }
+  const SH = []; { const r = rng(33); for (let l = 11; l <= 33; l++) { const n = Math.min(2 ** l, 30 + l * 14); SH[l] = []; for (let i = 0; i < n; i++) SH[l].push({ a: Math.PI + (i + r()) / n * Math.PI, dr: (r() - .5) * 22, tw: r() * 6.28, s: .7 + r() * .9 }); } }
+  const posE = (l, a, dr, s) => [CX + (R(l) + dr) * s * Math.cos(a), CY + (R(l) + dr) * s * Math.sin(a)];
+
+  /* ---- F: collapse onto shared ancestors, then the weave ---- */
+  const SF = camS(33);
+  const PART = [];                       // every ancestor seat at the end of E
+  for (let l = 1; l <= 10; l++) LV[l].forEach((a) => { const [x, y] = posE(l, a, 0, SF); PART.push({ x, y, tw: (l * 7.1 + a * 13) % 6.28 }); });
+  for (let l = 11; l <= 33; l++) SH[l].forEach((p) => { const [x, y] = posE(l, p.a, p.dr, SF); PART.push({ x, y, tw: p.tw }); });
+  const ANCH = []; { const r = rng(91); let tries = 0; while (ANCH.length < 120 && tries < 20000) { tries++; const a = Math.PI + .08 + r() * (Math.PI - .16), rad = 130 + Math.sqrt(r()) * 520; const x = CX + rad * Math.cos(a), y = CY + rad * Math.sin(a); if (ANCH.every((p) => (p.x - x) ** 2 + (p.y - y) ** 2 > 40 * 40)) ANCH.push({ x, y, n: 0, tw: r() * 6.28 }); } }
+  PART.forEach((p) => { let best = 0, bd = 1e9; ANCH.forEach((a, i) => { const d = (a.x - p.x) ** 2 + (a.y - p.y) ** 2; if (d < bd) { bd = d; best = i; } }); p.k = best; p.d = Math.sqrt(bd); ANCH[best].n++; });
+  const PEOPLE = [300, 460, 620, 780, 960, 1140, 1300, 1460, 1620].map((x, i) => ({ x, y: CY, you: x === 960, order: Math.abs(i - 4) }));
+  { const r = rng(17); PEOPLE.forEach((p) => { p.links = ANCH.map((a, i) => ({ i, w: r() + Math.max(0, 1 - Math.abs(a.x - p.x) / 700) })).sort((u, v) => v.w - u.w).slice(0, 26).map((o) => o.i); }); }
+  const sharedBy = ANCH.map((_, i) => PEOPLE.filter((p) => p.links.includes(i)).length);
+
+  /* ---- G: the Nature model — ancestors of all, or of none ---- */
+  const TOP = [], BOT = [];
+  { const r = rng(55); for (let i = 0; i < 36; i++) TOP.push({ x: 260 + i * (1400 / 35), y: 250 + (r() - .5) * 60, all: i === 17 || r() < .58, tw: r() * 6.28 });
+    for (let j = 0; j < 72; j++) BOT.push({ x: 200 + j * (1520 / 71), y: 760, you: j === 36 }); }
+
+  /* ---- H: generations as bands, woven ---- */
+  const BAND = []; { const r = rng(77); for (let g = 0; g <= N; g++) BAND.push({ h: 40 + r() * 70, th: [1 + Math.floor(r() * 5), 1 + Math.floor(r() * 7)], s: r() }); }
+  const XL = (year) => X1 - (NOW - year) / 5000 * (X1 - X0);
+
+  function drawYouMove(t) {  // the “you” dot leaves the timeline and becomes the root of the fan
+    const u = easeInOut((t - 40.5) / 1.1); if (t < 40.5 || t > 72.3) return;
+    const x = lerp(X1, CX, u), y = lerp(Y, CY, u), fade = 1 - clamp((t - 71.3) / 1.0);
+    glow(SG, x, y, 46 + 10 * Math.sin(t * 2.3), .9 * fade); dot(x, y, 3.2, '#FFF1D6', fade);
+  }
+  function drawE(t) {
+    if (t < 41.0 || t > 58.4) return;
+    const k = kC(t), s = camS(k), dim = (1 - .65 * clamp((t - 53.3) / .5) * (1 - clamp((t - 57.4) / .5))) * (1 - clamp((t - 57.6) / .6));
+    // links for the first 7 levels
+    c.lineWidth = .9;
+    for (let l = 1; l <= Math.min(7, 10); l++) { const a0 = easeOut((t - (41.3 + .55 * l)) / .5); if (a0 <= 0) break; c.strokeStyle = `rgba(233,201,142,${(.30 - l * .025) * a0 * dim})`; c.beginPath();
+      LV[l].forEach((a, i) => { const pa = l === 1 ? null : LV[l - 1][i >> 1]; const [x1, y1] = posE(l, a, 0, s); const [x0, y0] = pa === null ? [CX, CY] : posE(l - 1, pa, 0, s); const mx = (x0 + x1) / 2, my = (y0 + y1) / 2; const cx0 = CX + (mx - CX) * 1.08, cy0 = CY + (my - CY) * 1.08; c.moveTo(x0, y0); c.quadraticCurveTo(cx0, cy0, x1, y1); }); c.stroke(); }
+    // nodes of levels 1..10
+    for (let l = 1; l <= 10; l++) { const a0 = easeOut((t - (41.3 + .55 * l)) / .45); if (a0 <= 0) break; const big = l <= 5; const sz = big ? 26 - l * 2.4 : 9 - l * .4;
+      LV[l].forEach((a, i) => { const [x, y] = posE(l, a, 0, s); const tw = .8 + .2 * Math.sin(t * 3 + i * 1.7 + l); if (big) glow(SG, x, y, sz * 1.8, .8 * a0 * tw * dim); dot(x, y, Math.max(.8, 2.6 - l * .17), '#F6E3BE', .95 * a0 * dim); }); }
+    // shells 11..33
+    for (let l = 11; l <= 33; l++) { const a0 = clamp(k - l + 1); if (a0 <= 0) break;
+      const col = l > 28 ? '#FFF4E0' : '#EFD6A6';
+      SH[l].forEach((p) => { const [x, y] = posE(l, p.a, p.dr, s); const tw = .65 + .35 * Math.sin(t * 4 + p.tw); dot(x, y, .75 * p.s, col, .8 * a0 * tw * dim); }); }
+    // a rim of light on the newest shell
+    if (k > 10.5) { const l = Math.min(33, Math.floor(k)); c.globalAlpha = .18 * dim; c.strokeStyle = '#E9C98E'; c.lineWidth = 2; c.beginPath(); c.arc(CX, CY, R(l) * s, Math.PI, 2 * Math.PI); c.stroke(); }
+  }
+  function drawF(t) {
+    if (t < 57.6 || t > 72.4) return;
+    const fade = (1 - clamp((t - 71.3) / 1.0)) * clamp((t - 57.6) / .6);
+    const uG = easeInOut((t - 58.2) / 2.8);
+    // seats travel to the ancestor who fills them
+    PART.forEach((p, i) => { const a = ANCH[p.k]; const u = easeInOut((t - 58.0 - p.d / 700) / 2.2); const x = lerp(p.x, a.x, u), y = lerp(p.y, a.y, u);
+      dot(p.x, p.y, .7, '#8FA3B8', .16 * u * fade);                                  // the empty seat stays behind
+      if (u > 0 && u < 1 && i % 3 === 0) { c.globalAlpha = .05 * fade; c.strokeStyle = '#E9C98E'; c.lineWidth = .6; c.beginPath(); c.moveTo(p.x, p.y); c.lineTo(x, y); c.stroke(); }
+      dot(x, y, .8, '#F3DDB0', (1 - .7 * u) * .85 * fade); });
+    // after the collapse: each ancestor keeps faint threads to its seats
+    if (uG > .9) { c.globalAlpha = .035 * fade * clamp((t - 61.2) / 1); c.strokeStyle = '#E9C98E'; c.lineWidth = .5; c.beginPath(); PART.forEach((p, i) => { if (i % 2) return; const a = ANCH[p.k]; c.moveTo(a.x, a.y); c.lineTo(p.x, p.y); }); c.stroke(); }
+    // the weave: many people, one set of ancestors
+    const wv = []; PEOPLE.forEach((p) => { const d = 64.8 + p.order * .38; p.u = easeInOut((t - d) / 1.6); });
+    PEOPLE.forEach((p) => { if (p.u <= 0) return; c.strokeStyle = p.you ? '#E9C98E' : '#DCE6F0'; c.lineWidth = p.you ? 1.1 : .8; c.globalAlpha = (p.you ? .38 : .2) * fade; c.beginPath();
+      p.links.forEach((ai) => { const a = ANCH[ai]; const cx1 = p.x, cy1 = p.y - 180, cx2 = a.x, cy2 = a.y + 120; const steps = 14, m = Math.max(1, Math.round(steps * p.u)); c.moveTo(p.x, p.y);
+        for (let s = 1; s <= m; s++) { const u = s / steps; const x = (1 - u) ** 3 * p.x + 3 * (1 - u) ** 2 * u * cx1 + 3 * (1 - u) * u * u * cx2 + u ** 3 * a.x; const y = (1 - u) ** 3 * p.y + 3 * (1 - u) ** 2 * u * cy1 + 3 * (1 - u) * u * u * cy2 + u ** 3 * a.y; c.lineTo(x, y); } }); c.stroke(); });
+    // ancestors glow brighter the more people share them
+    ANCH.forEach((a, i) => { const share = PEOPLE.reduce((s, p) => s + (p.links.includes(i) ? clamp(p.u) : 0), 0); const tw = .85 + .15 * Math.sin(t * 2.6 + a.tw);
+      glow(SG, a.x, a.y, (10 + 2.4 * Math.sqrt(a.n)) * uG + share * 5, (.55 + .08 * share) * uG * tw * fade); dot(a.x, a.y, 1.6, '#FFF4E0', uG * fade); });
+    PEOPLE.forEach((p) => { if (p.you) return; const a = easeOut((t - (64.4 + p.order * .38)) / .5) * fade; glow(SW, p.x, p.y, 34, .7 * a); dot(p.x, p.y, 2.6, '#FFFFFF', a); });
+  }
+  function drawG(t) {
+    if (t < 72.2 || t > 88.4) return;
+    const fin = clamp((t - 72.3) / 1.2), fout = 1 - clamp((t - 86.6) / 1.6), A = fin * fout;
+    const mrca = TOP[17];
+    // lines: the most recent common ancestor first, then everyone else's fate
+    c.lineWidth = .7;
+    TOP.forEach((s, i) => { const isM = i === 17; const start = isM ? 76.2 : 80.2 + (i % 12) * .06; if (!s.all || t < start) return;
+      c.strokeStyle = isM ? '#F2D7A4' : '#E9C98E'; c.globalAlpha = (isM ? .22 : .085) * A; c.beginPath();
+      BOT.forEach((b, j) => { const u = easeOut((t - start - j * (isM ? 1.6 / 72 : .8 / 72)) / .7); if (u <= 0) return; c.moveTo(s.x, s.y); c.lineTo(lerp(s.x, b.x, u), lerp(s.y, b.y, u)); }); c.stroke(); });
+    TOP.forEach((s, i) => { const isM = i === 17; const tw = .85 + .15 * Math.sin(t * 2.2 + s.tw);
+      let a = A, drop = 0, size = 22;
+      if (isM) { size = 22 + 30 * easeOut((t - 76.0) / .6) * (1 - .4 * clamp((t - 79.6) / 1)); }
+      if (!s.all) { const u = clamp((t - 80.2 - (i % 12) * .06) / 1.4); a *= 1 - u; drop = 60 * easeIn(u); }
+      else if (!isM) { size = 22 + 14 * easeOut((t - 80.2 - (i % 12) * .06) / .6); }
+      glow(isM ? SW : SG, s.x, s.y + drop, size, .85 * a * tw); dot(s.x, s.y + drop, 2, '#FFF4E0', a); });
+    BOT.forEach((b, j) => { const a = A * easeOut((t - 72.6 - j * .012) / .5); glow(b.you ? SG : SS, b.x, b.y, b.you ? 30 : 16, (b.you ? .9 : .5) * a); dot(b.x, b.y, b.you ? 2.6 : 1.6, b.you ? '#FFE9BF' : '#DCE6F0', a); });
+    if (A > .01) { c.globalAlpha = A * .9; c.fillStyle = '#E9C98E'; c.font = '26px Song'; c.textAlign = 'center'; c.fillText('你', BOT[36].x, BOT[36].y + 46); c.fillStyle = '#8FA3B8'; c.font = '22px Song'; c.textAlign = 'left'; c.fillText('几千年前', 120, 256); c.fillText('今天', 120, 766); }
+  }
+  function drawH(t) {
+    if (t < 88.0 || t > 108) return;
+    const out = 1 - .72 * clamp((t - 96.4) / .8) - .2 * clamp((t - 101.6) / .8);
+    for (let g = 0; g <= N; g++) { const b = BAND[g]; const x = XL(NOW - g * GEN); const ap = easeOut((t - 88.2 - (g / N) * 2.4) / .8) * out; if (ap <= 0) continue;
+      c.globalAlpha = .24 * ap; c.drawImage(SG, x - 6, Y - b.h, 12, b.h * 2);
+      c.strokeStyle = '#E9C98E'; c.lineWidth = .6; c.globalAlpha = .11 * ap; c.beginPath();
+      b.th.forEach((k, m) => { const g2 = Math.min(N, g + k); const x2 = XL(NOW - g2 * GEN); const h2 = BAND[g2].h * (m ? -.8 : .8); c.moveTo(x, Y - b.h * (m ? -.8 : .8)); c.quadraticCurveTo((x + x2) / 2, Y, x2, Y + h2); }); c.stroke(); }
+    // a wave of light runs from today back five thousand years
+    const w = clamp((t - 92.2) / .3) * (1 - clamp((t - 95.6) / .5)); if (w > 0) { const gcen = (t - 92.2) / 3.2 * N; const x = XL(NOW - gcen * GEN); glow(SW, x, Y, 150, .5 * w); glow(SG, x, Y, 320, .35 * w); }
+    if (t > 96.4 && t < 101.8) { const a = clamp((t - 96.6) / 1) * (1 - clamp((t - 101.2) / .6)); glow(SG, 960, 440, 900, .22 * a); }
+  }
+
+  /* ================= per-frame render ================= */
+  const span = (t) => { if (t < 13.6) return 100; const k = easeInOut((t - 13.6) / 6.0); return Math.exp(Math.log(100) + (Math.log(5000) - Math.log(100)) * k); };
+  const X = (year, sp) => X1 - (NOW - year) / sp * (X1 - X0);
+  const cnum = $('#cnum'), ancGen = $('#ancGen'), ancNum = $('#ancNum');
+  const fmt = (n) => n < 1e4 ? n.toLocaleString('en-US') : n < 1e8 ? (n / 1e4).toFixed(1) + ' 万' : (n / 1e8).toFixed(1) + ' 亿';
+  const dyn = (y) => y >= 1912 ? '' : y >= 1644 ? ' · 清' : y >= 1368 ? ' · 明' : y >= 1271 ? ' · 元' : y >= 1127 ? ' · 南宋' : ' · 北宋';
+
+  function render(t) {
+    const frame = Math.round(t * 60); grain(frame);
+    const sp = span(t);
+    // ---- SVG timeline ----
+    const fineA = t < 8.6 ? 0 : clamp((t - 8.6) / .8) * (1 - clamp((t - 14.2) / 1.4));
+    FINE.forEach(([y, g]) => { g.setAttribute('transform', `translate(${X(y, sp)} 0)`); g.setAttribute('opacity', fineA * clamp((X(y, sp) - X0 + 30) / 60)); });
+    const coarseA = clamp((t - 17.4) / 1.6) * (1 - clamp((t - 22.6) / .6)) + clamp((t - 30.2) / .8) * (1 - clamp((t - 40.3) / .7)) + clamp((t - 88.4) / 1) * (1 - clamp((t - 96.2) / .6));
+    COARSE.forEach(([y, g]) => { const x = X(y, sp); g.setAttribute('transform', `translate(${x} 0)`); g.setAttribute('opacity', coarseA * clamp((x - X0 + 20) / 40)); });
+    ends.setAttribute('opacity', coarseA);
+    $('#axis').style.opacity = (t < 8.4 ? 0 : clamp((t - 8.4) / .6)) * (1 - clamp((t - 22.6) / .6)) + clamp((t - 30.2) / .6) * (1 - clamp((t - 40.4) / .8)) + clamp((t - 88.0) / .8) * (1 - clamp((t - 101.4) / .8));
+
+    const fly = (g) => { const d = 22.8 + g * (1.5 / N); return easeInOut((t - d) / 1.2) * (1 - easeInOut((t - 29.6 - (N - g) * (.5 / N)) / 1.0)); };
+    const lit = (g) => t > 41 ? 0 : g <= Math.floor(LIBAI_G) ? clamp((t - (31.4 + g * (2.4 / 49))) / .25) : g <= Math.floor(KONG_G) ? clamp((t - (36.0 + (g - 50) * (1.6 / 45))) / .25) : 0;
+    const dim = t > 31.2 && t < 40.4 ? .32 : 1;
+    const vis = (1 - clamp((t - 40.4) / .8)) + clamp((t - 88.0) / 1.0) * (1 - .45 * clamp((t - 96.3) / .8)) * (1 - clamp((t - 101.4) / .8));
+    const arrival = clamp((t - 19.8) / .5) * (1 - clamp((t - 21.6) / 1.2));
+    if (vis > 0) D.forEach((d) => {
+      let x = X(d.year, sp), y = Y;
+      const appear = t > 80 ? 1 : d.g < 4 ? clamp((t - (9.4 + d.g * 1.05)) / .5) : clamp((x - X0 + 12) / 24) * (t >= 13.6 ? 1 : 0);
+      const f = t < 31 ? fly(d.g) : 0;
+      if (f > 0) { const s = SEATS[ORDER[d.g]], cx = (x + s.x) / 2, cy = Math.min(y, s.y) - 140; const u = f; x = (1 - u) * (1 - u) * x + 2 * (1 - u) * u * cx + u * u * s.x; y = (1 - u) * (1 - u) * y + 2 * (1 - u) * u * cy + u * u * s.y; }
+      const L = lit(d.g); const wave = arrival * Math.exp(-Math.pow(((1 - (t - 19.8) / 1.6) * N - d.g) / 14, 2));
+      const breathe = .88 + .12 * Math.sin(t * 2.1 + d.g * .7);
+      d.grp.setAttribute('transform', `translate(${x.toFixed(2)} ${y.toFixed(2)})`);
+      d.grp.setAttribute('opacity', (appear * vis * (L > 0 ? 1 : dim) * breathe).toFixed(3));
+      d.halo.setAttribute('r', (10 + 6 * wave + 7 * L).toFixed(2));
+      d.core.setAttribute('r', ((d.g === 0 ? 4.2 : 3) + 1.6 * wave).toFixed(2));
+      d.core.setAttribute('fill', wave > .35 ? '#FFF6E0' : (L > .5 || d.g === 0 ? '#FFE9BF' : '#F3DDB0'));
+    }); else if (D[0].grp.getAttribute('opacity') !== '0') D.forEach((d) => d.grp.setAttribute('opacity', 0));
+    ORDER.forEach((si, g) => { const on = g <= N && t < 31 && fly(g) > .98; SEATS[si].el.setAttribute('fill', on ? '#E9C98E' : '#8FA3B8'); SEATS[si].el.setAttribute('fill-opacity', on ? .95 : .24); });
+    trainLab.textContent = t > 25.9 ? '已坐 185 · 共 576 座' : '复兴号 · 8 辆编组 · 576 座';
+    FAM.forEach((tx, g) => { const x = X(NOW - g * GEN, sp); tx.setAttribute('x', x); tx.setAttribute('y', Y - 44); tx.setAttribute('opacity', clamp((t - (9.5 + g * 1.05)) / .5) * (1 - clamp((t - 13.9) / .6))); });
+    { const a = X(NOW, sp), b = X(NOW - GEN, sp); gapPath.setAttribute('d', `M${a} ${Y + 64} L${a} ${Y + 74} L${b} ${Y + 74} L${b} ${Y + 64}`); gapTxt.setAttribute('x', (a + b) / 2); gapTxt.setAttribute('y', Y + 106); gap.setAttribute('opacity', clamp((t - 10.9) / .5) * (1 - clamp((t - 13.8) / .5))); }
+    mLibai.set(X(LIBAI, sp)); mLibai.g.setAttribute('opacity', clamp((t - 30.8) / .7) * (1 - clamp((t - 40.3) / .7)));
+    mKong.set(X(KONG, sp)); mKong.g.setAttribute('opacity', clamp((t - 35.6) / .7) * (1 - clamp((t - 40.3) / .7)));
+    // counters
+    if (t < 31.2) cnum.textContent = t < 13.6 ? 3 : Math.min(N, Math.floor(sp / GEN));
+    else if (t < 35.8) cnum.textContent = Math.min(49, Math.floor(clamp((t - 31.4) / 2.4) * 49 + 1e-6));
+    else cnum.textContent = 49 + Math.min(46, Math.floor(clamp((t - 36.0) / 1.6) * 46 + 1e-6));
+    { const k = Math.max(1, Math.floor(kC(t) + 1e-6)); const year = Math.round(NOW - k * GEN); ancGen.textContent = `往上第 ${k} 代 · 约 ${year} 年${dyn(year)}`; ancNum.textContent = fmt(2 ** k); }
+
+    // ---- canvas fx ----
+    c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, W, H); c.globalCompositeOperation = 'lighter';
+    drawYouMove(t); drawE(t); drawF(t); drawG(t); drawH(t);
+    c.globalAlpha = 1; c.globalCompositeOperation = 'source-over';
+  }
+
+  /* ================= timeline ================= */
+  const state = { t: 0 };
+  const tl = gsap.timeline({ paused: true, onUpdate: () => render(state.t) });
+  tl.to(state, { t: 108, duration: 108, ease: 'none' }, 0);
+  const inT = (sel, at, d = .9) => tl.fromTo(sel, { opacity: 0, filter: 'blur(10px)', y: 10 }, { opacity: 1, filter: 'blur(0px)', y: 0, duration: d, ease: 'power2.out', immediateRender: false }, at);
+  const outT = (sel, at, d = .6) => tl.to(sel, { opacity: 0, filter: 'blur(6px)', duration: d, ease: 'power2.in' }, at);
+  // hook
+  tl.to('#q', { y: -250, scale: .56, duration: 1.1, ease: 'power3.inOut' }, 2.9);
+  tl.to('#q .en', { opacity: 0, duration: .5 }, 2.9);
+  ['#c1', '#c2', '#c3'].forEach((s, i) => inT(s, 3.4 + i * .35, .8));
+  tl.set('#timer', { opacity: 0 }, 0).to('#timer', { opacity: 1, duration: .4 }, 4.6).to('#timer i', { scaleX: 1, duration: 3.0, ease: 'none' }, 4.8).to('#timer', { opacity: 0, duration: .4 }, 7.9);
+  tl.to('#q', { opacity: 0, duration: .6 }, 8.0);
+  tl.to(['#c1', '#c2', '#c3'], { opacity: 0, filter: 'blur(6px)', duration: .8, ease: 'power2.in' }, 8.0);
+  tl.fromTo('#axisLine', { attr: { x1: 1720 } }, { attr: { x1: 200 }, duration: 1.2, ease: 'power2.inOut', immediateRender: false }, 8.4);
+  // counters and cards
+  tl.set('#counter', { opacity: 0 }, 0).to('#counter', { opacity: 1, duration: .7 }, 13.8).to('#counter', { opacity: 0, duration: .5 }, 22.6).to('#counter', { opacity: 1, duration: .6 }, 31.2).to('#counter', { opacity: 0, duration: .6 }, 40.3);
+  tl.set('#guess', { opacity: 0 }, 0).to('#guess', { opacity: 1, duration: .6 }, 20.2).to('#ring', { attr: { 'stroke-dashoffset': 0 }, duration: .7, ease: 'power2.inOut' }, 20.5).to('#guess', { opacity: 0, duration: .5 }, 22.6);
+  tl.to('#halo', { scale: 1.35, opacity: 1, duration: .5, ease: 'power2.out' }, 19.8).to('#halo', { scale: 1, opacity: .75, duration: 1.6, ease: 'power2.inOut' }, 20.3);
+  tl.set('#train', { opacity: 0 }, 0).to('#train', { opacity: 1, duration: .8 }, 22.6).to('#train', { opacity: 0, duration: .8 }, 29.8);
+  tl.to('#halo', { opacity: .35, duration: 1.2 }, 40.6).to('#halo', { opacity: .9, duration: 1.5 }, 51.5).to('#halo', { opacity: .45, duration: 1.5 }, 57.6).to('#halo', { opacity: .75, duration: 1.5 }, 88.0);
+  tl.set('#anc', { opacity: 0 }, 0); inT('#anc', 44.8, .8); outT('#anc', 53.3);
+  tl.set('#bars', { opacity: 0 }, 0).to('#bars', { opacity: 1, duration: .6 }, 53.4).fromTo('#barA', { scaleX: 0 }, { scaleX: 1, duration: 1.2, ease: 'power3.out', immediateRender: false }, 53.5).fromTo('#barB', { scaleX: 0 }, { scaleX: 1, duration: 1.2, ease: 'power3.out', immediateRender: false }, 53.9).to('#bars', { opacity: 0, filter: 'blur(6px)', duration: .6 }, 57.3);
+  SUBS.forEach(([, , a, b], i) => { inT('#sub' + i, a); outT('#sub' + i, b); });
+  SRCS.forEach(([, a, b], i) => { inT('#src' + i, a, .6); outT('#src' + i, b); });
+  tl.set('#final', { opacity: 0 }, 0); inT('#final', 96.6, 1.4); outT('#final', 101.2, .8);
+  tl.set('#ask', { opacity: 0 }, 0); inT('#ask', 102.0, 1.0); tl.to('#ask', { opacity: 0, duration: 1.2 }, 106.6);
+  tl.set('#credit', { opacity: 0 }, 0).to('#credit', { opacity: 1, duration: .8 }, 102.0).to(['#credit', '#by'], { opacity: 0, duration: 1.2 }, 106.6);
+
+  window.__timelines = window.__timelines || {}; window.__timelines["main"] = tl;
+  document.fonts.ready.then(() => render(state.t));
+})();
+
+</script>
+</body>
+</html>
