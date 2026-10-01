@@ -12,6 +12,7 @@ src/film.js          # GSAP 时间轴＋两个 Canvas 粒子场景（时间轴�
 build.py             # 把 src/film.js 内联进 index.html（HyperFrames 需要）
 index.html           # build.py 的产物，可以直接渲染
 music.py             # 配乐：D 宫五声音阶，拨弦、钟、颂钵、低频、空气声、混响 → assets/audio/music.wav
+music_real.py        # 同一份谱，换成真乐器录音（竖琴、钟琴、大提琴组、管钟、锣）→ 覆盖 assets/audio/music.wav
 hyperframes.json
 ```
 
@@ -21,7 +22,8 @@ hyperframes.json
 
 ```bash
 cp -r examples/wuqiannian my-film && bash scripts/fetch-vendor.sh my-film && cd my-film
-python3 build.py && uv run music.py
+python3 build.py && uv run music.py      # 已发布版本用的合成配乐
+# 或真乐器版：bash ../scripts/fetch-samples.sh && uv run music_real.py
 npx -y hyperframes@0.8.77 check
 npx -y hyperframes@0.8.77 snapshot --at 0,20.6,52.3,68.9,98.8 --no-end
 npx -y hyperframes@0.8.77 render -o raw.mp4 --fps 60 --resolution 4k --quality delivery

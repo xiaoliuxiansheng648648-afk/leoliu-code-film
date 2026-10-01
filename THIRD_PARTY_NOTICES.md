@@ -11,5 +11,7 @@ This repository contains only original code and documentation (MIT, see LICENSE)
 | [Noto Serif SC](https://fonts.google.com/noto/specimen/Noto+Serif+SC) | Chinese serif type (knowledge-film example) | SIL Open Font License 1.1 |
 | [EB Garamond](https://fonts.google.com/specimen/EB+Garamond) | Latin type and numerals (knowledge-film example) | SIL Open Font License 1.1 |
 | numpy (via `uv run`) | Music synthesis | BSD-3-Clause |
+| [soundfile](https://github.com/bastibe/python-soundfile) (via `uv run`) | Reading instrument samples | BSD-3-Clause |
+| [VSCO 2 CE](https://github.com/sgossner/VSCO-2-CE) (subset, via `scripts/fetch-samples.sh`) | Recorded harp, glockenspiel, cello section, tubular bells, gong | CC0 1.0 |
 
 The first example film's opening voice line was recorded with the author's own voice service and is not included. The second example (`examples/wuqiannian`) has no voice; its music is synthesised by its own `music.py`.

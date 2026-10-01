@@ -22,7 +22,7 @@
 1. **故事和分镜表**：故事短片先定人物、期待和落点，不做地名清单或风格合集；知识短片先过选题四问，每 5–10 秒给一个小答案，隔一会儿让观众猜一次。
 2. **风格帧关**：先渲 3 张定稿质量的静帧，你点头了才做动画。
 3. **搭工程**：2D 画布场景、Three.js 3D 镜头、GSAP 时间轴。每一帧只由时间决定，可以逐帧渲染。
-4. **代码合成配乐**：和弦、琶音、环境声、转场重音都在代码里，没有版权问题。
+4. **代码写谱，真乐器演奏**：和弦、琶音、环境声、转场重音都在代码里；先用合成音对齐画面，定稿后换成 CC0 的真乐器录音（竖琴、钟琴、大提琴组……），没有版权问题。
 5. **自检至少两轮**：技术检查＋手机小窗看静帧，按“好不好看”改。
 6. **渲染交付**：压缩、响度统一到 -16 LUFS。
 
@@ -61,6 +61,7 @@ cd my-knowledge-film
 python3 build.py                                # 改 src/ 后重新生成 index.html
 uv run music.py
 npx -y hyperframes@0.8.77 snapshot --at 0,20.6,52.3,68.9,98.8 --no-end
+# 想听真乐器版：bash ../scripts/fetch-samples.sh && uv run music_real.py（覆盖 music.wav）
 npx -y hyperframes@0.8.77 render -o raw.mp4 --fps 60 --resolution 4k --quality delivery
 ```
 
